@@ -1,0 +1,153 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ProfitReport" language="java" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3f2f0ab0-a2cd-4588-9ae8-b4952713c51c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jalani"/>
+	<query language="SQL"><![CDATA[SELECT 
+    m.medicine_name,
+    SUM(pi.quantity) AS total_quantity_sold,
+    SUM(pi.quantity * m.buying_price) AS total_cost,
+    SUM(pi.quantity * m.selling_price) AS total_revenue,
+    SUM(pi.quantity * (m.selling_price - m.buying_price)) AS total_profit
+FROM prescription_items pi
+JOIN medicines m ON pi.medicine_id = m.medicine_id
+JOIN prescriptions pr ON pi.prescription_id = pr.prescription_id
+JOIN invoices i ON pr.appointment_id = i.appointment_id
+GROUP BY m.medicine_id, m.medicine_name;]]></query>
+	<field name="medicine_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="medicine_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="medicine_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="medicines"/>
+	</field>
+	<field name="total_quantity_sold" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_quantity_sold"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_quantity_sold"/>
+	</field>
+	<field name="total_cost" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_cost"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_cost"/>
+	</field>
+	<field name="total_revenue" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_revenue"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_revenue"/>
+	</field>
+	<field name="total_profit" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_profit"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_profit"/>
+	</field>
+	<group name="medicine_name">
+		<expression><![CDATA[$F{medicine_name}]]></expression>
+	</group>
+	<group name="total_quantity_sold">
+		<expression><![CDATA[$F{total_quantity_sold}]]></expression>
+	</group>
+	<group name="total_cost">
+		<expression><![CDATA[$F{total_cost}]]></expression>
+	</group>
+	<group name="total_revenue">
+		<expression><![CDATA[$F{total_revenue}]]></expression>
+	</group>
+	<group name="total_profit">
+		<expression><![CDATA[$F{total_profit}]]></expression>
+	</group>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch">
+		<element kind="staticText" uuid="b012a144-f56c-4bc2-91b2-584659ea0273" x="123" y="10" width="309" height="30" fontSize="19.0">
+			<text><![CDATA[PET CARE CLINIC - PROFIT REPORT]]></text>
+		</element>
+	</title>
+	<pageHeader height="45" splitType="Stretch"/>
+	<columnHeader height="61" splitType="Stretch">
+		<element kind="staticText" uuid="8ab58803-b8ee-42cf-b2fe-add7579fff4a" x="0" y="0" width="111" height="30">
+			<text><![CDATA[medicine_name]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c2cf8125-8e78-4780-a14e-d2c270f6972f"/>
+			<box padding="1">
+				<pen lineWidth="1.0" lineStyle="Solid"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="8b3b3242-8b8e-4f91-aebb-dc19cc72d263" x="111" y="0" width="111" height="30">
+			<text><![CDATA[total_quantity_sold]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ee573c10-5a85-4a9e-bfa7-d615a39fc303"/>
+			<box padding="1">
+				<pen lineWidth="1.0" lineStyle="Solid"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="43f5aab1-aa7b-4007-9cf7-33f4a19c81e5" x="222" y="0" width="111" height="30">
+			<text><![CDATA[total_cost]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3c1a0d42-67a3-4ba4-8aae-64372d2eb1ac"/>
+			<box padding="1">
+				<pen lineWidth="1.0" lineStyle="Solid"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="0af407f4-40e0-42c7-86e6-6d6daacba4ee" x="333" y="0" width="111" height="30">
+			<text><![CDATA[total_revenue]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="616d5699-ebc6-429b-a4c7-31e93ffebfbc"/>
+			<box padding="1">
+				<pen lineWidth="1.0" lineStyle="Solid"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="3b4dc212-bfc7-4d54-84a2-67821200225e" x="444" y="0" width="111" height="30">
+			<text><![CDATA[total_profit]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="74322cb2-5ee6-4760-9957-3fdca6cf64fd"/>
+			<box padding="1">
+				<pen lineWidth="1.0" lineStyle="Solid"/>
+			</box>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<element kind="textField" uuid="482b1bf6-78e4-48ad-bfcc-b38bf904aaeb" x="0" y="0" width="111" height="30">
+				<expression><![CDATA[$F{medicine_name}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c2cf8125-8e78-4780-a14e-d2c270f6972f"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="2d9c5416-4bff-46f4-8cb4-42e03002463c" x="111" y="0" width="111" height="30">
+				<expression><![CDATA[$F{total_quantity_sold}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ee573c10-5a85-4a9e-bfa7-d615a39fc303"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="f48bbbd5-03e2-46a0-a9b4-66a7f9a2a417" x="222" y="0" width="111" height="30">
+				<expression><![CDATA[$F{total_cost}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3c1a0d42-67a3-4ba4-8aae-64372d2eb1ac"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="fe9e2a1a-430c-441c-8658-75e281c21169" x="333" y="0" width="111" height="30">
+				<expression><![CDATA[$F{total_revenue}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="616d5699-ebc6-429b-a4c7-31e93ffebfbc"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="bbbfb5c4-7fa6-4e33-aa19-6f655671896e" x="444" y="0" width="111" height="30">
+				<expression><![CDATA[$F{total_profit}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="74322cb2-5ee6-4760-9957-3fdca6cf64fd"/>
+				<box padding="1">
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+			</element>
+			<property name="com.jaspersoft.studio.layout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="24" splitType="Stretch"/>
+	<summary height="372" splitType="Stretch">
+		<element kind="chart" chartType="bar" uuid="c020cada-7512-4660-976f-b54dcd85620b" x="20" y="120" width="535" height="222" evaluationTime="Report">
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["Profit"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{medicine_name}]]></categoryExpression>
+					<valueExpression><![CDATA[$F{total_profit}]]></valueExpression>
+				</series>
+			</dataset>
+			<plot categoryAxisLabelColor="#000000" categoryAxisTickLabelColor="#000000" categoryAxisLineColor="#000000" valueAxisLabelColor="#000000" valueAxisTickLabelColor="#000000" valueAxisLineColor="#000000">
+				<itemLabel/>
+			</plot>
+		</element>
+	</summary>
+</jasperReport>
