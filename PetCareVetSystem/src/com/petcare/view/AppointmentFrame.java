@@ -151,13 +151,13 @@ public class AppointmentFrame extends javax.swing.JFrame {
         jLabel3.setText("Date");
 
         txtSearchPhone.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtSearchPhone.setText("jTextField1");
 
         lblCustomerInfo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblCustomerInfo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton1.setText("Search Customer");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel4.setText("Search Section:");
@@ -172,10 +172,12 @@ public class AppointmentFrame extends javax.swing.JFrame {
         jLabel7.setText("Reason for visit");
 
         txtTime.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtTime.setText("HH:MM:SS");
 
         txtReason.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         txtDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtDate.setText("YYYY-MM-DD");
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton2.setText("Delete Selected");
@@ -324,7 +326,7 @@ public class AppointmentFrame extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 525, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(161, 161, 161)
+                        .addGap(149, 149, 149)
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -464,6 +466,50 @@ public class AppointmentFrame extends javax.swing.JFrame {
     
         
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        
+        String phone = txtSearchPhone.getText().trim();
+    if (phone.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a phone number!", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String sql = "SELECT c.name AS customer_name, p.pet_id, p.pet_name, p.species " +
+                 "FROM customers c " +
+                 "JOIN pets p ON c.customer_id = p.customer_id " +
+                 "WHERE c.phone = ?";
+
+    try {
+        Connection conn = DBConnection.getInstance().getConnection();
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, phone);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            selectedPetId = rs.getInt("pet_id");
+            String cName = rs.getString("customer_name");
+            String pName = rs.getString("pet_name");
+            String species = rs.getString("species");
+
+            lblCustomerInfo.setText("Customer: " + cName + " | Pet: " + pName + " (" + species + ")");
+            JOptionPane.showMessageDialog(this, "Customer found!");
+        } else {
+            selectedPetId = -1;
+            lblCustomerInfo.setText("Customer not found!");
+            int choice = JOptionPane.showConfirmDialog(this, 
+                    "Is phone number se koi customer registered nahi hai. Naya registration karna hai?", 
+                    "Customer Not Found", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                new PetRegistrationFrame().setVisible(true);
+            }
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Search Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

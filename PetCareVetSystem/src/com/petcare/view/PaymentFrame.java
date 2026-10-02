@@ -22,6 +22,20 @@ public class PaymentFrame extends javax.swing.JFrame {
      * Creates new form PaymentFrame
      */
     
+    
+    public PaymentFrame() {
+    initComponents();
+    setLocationRelativeTo(null);
+    
+    // Service Charge Field එක වෙනස් වෙද්දී Auto Calculate වීම
+    txtServiceCharge.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        public void insertUpdate(javax.swing.event.DocumentEvent e) { calculateNetTotal(); }
+        public void removeUpdate(javax.swing.event.DocumentEvent e) { calculateNetTotal(); }
+        public void changedUpdate(javax.swing.event.DocumentEvent e) { calculateNetTotal(); }
+    });
+
+    loadPaymentQueue();
+}
     // 3. Net Total Calculate කිරීම
     private void calculateNetTotal() {
         try {
@@ -45,12 +59,7 @@ public class PaymentFrame extends javax.swing.JFrame {
     private double serviceCharge = 0.0;
     private double netTotal = 0.0;
 
-    public PaymentFrame() {
-        initComponents();
-        setLocationRelativeTo(null); // Window එක Screen එක මැදට ගැනීම
-        loadPaymentQueue();
-    }
-
+    
     // 1. Payment-Pending Status තියෙන Appointments Combo Box එකට Load කිරීම
     private void loadPaymentQueue() {
         cmbPaymentQueue.removeAllItems();
@@ -278,6 +287,65 @@ public class PaymentFrame extends javax.swing.JFrame {
 
     private void cmbPaymentQueueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbPaymentQueueActionPerformed
         // TODO add your handling code here:
+        
+        // when combo box selected after that fees coming up using this
+                                              
+    int index = cmbPaymentQueue.getSelectedIndex();
+    if (index == -1) {
+        doctorFee = 0.0;
+        pharmacyFee = 0.0;
+        lblDoctorFee.setText("Doctor Fee: Rs. 0.00");
+        lblPharmacyFee.setText("Pharmacy Fee: Rs. 0.00");
+        calculateNetTotal();
+        return;
+    }
+
+    int apptId = appointmentIds.get(index);
+
+    try {
+        Connection conn = DBConnection.getInstance().getConnection();
+
+        // A. Doctor Fee get from the Prescriptions table 
+        String sqlDoctor = "SELECT doctor_fee, prescription_id FROM prescriptions WHERE appointment_id = ?";
+        PreparedStatement pstDoc = conn.prepareStatement(sqlDoctor);
+        pstDoc.setInt(1, apptId);
+        ResultSet rsDoc = pstDoc.executeQuery();
+
+        int prescId = -1;
+        if (rsDoc.next()) {
+            doctorFee = rsDoc.getDouble("doctor_fee");
+            prescId = rsDoc.getInt("prescription_id");
+        } else {
+            doctorFee = 0.0;
+        }
+
+        // B. Pharmacy Fee and Prescription Items get  Medicines JOIN and cal the totsl
+        pharmacyFee = 0.0;
+        if (prescId != -1) {
+            String sqlPharma = "SELECT pi.quantity, m.selling_price " +
+                               "FROM prescription_items pi " +
+                               "JOIN medicines m ON pi.medicine_id = m.medicine_id " +
+                               "WHERE pi.prescription_id = ?";
+            PreparedStatement pstPharma = conn.prepareStatement(sqlPharma);
+            pstPharma.setInt(1, prescId);
+            ResultSet rsPharma = pstPharma.executeQuery();
+
+            while (rsPharma.next()) {
+                int qty = rsPharma.getInt("quantity");
+                double price = rsPharma.getDouble("selling_price");
+                pharmacyFee += (qty * price);
+            }
+        }
+
+        // C. UI Labels Update  Net Total 
+        lblDoctorFee.setText("Doctor Fee: Rs. " + String.format("%.2f", doctorFee));
+        lblPharmacyFee.setText("Pharmacy Fee: Rs. " + String.format("%.2f", pharmacyFee));
+        calculateNetTotal();
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Fee Calculation Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_cmbPaymentQueueActionPerformed
 
     private void btnCalculate2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalculate2ActionPerformed
